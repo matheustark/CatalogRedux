@@ -1,6 +1,7 @@
 import React, { useCallback } from 'react';
-import { useDispatch } from 'react-redux';
-import { addProductToCart } from '../store/modules/cart/actions';
+import { useDispatch, useSelector } from 'react-redux';
+import { IState } from '../store';
+import { addProductToCartRequest } from '../store/modules/cart/actions';
 import { IProduct } from '../store/modules/cart/types';
 
 // import { Container } from './styles';
@@ -14,8 +15,12 @@ interface CatalogItemProps {
 const CatalogItem: React.FC<CatalogItemProps> = ({ product }) => {
   const dispatch = useDispatch();
 
+  const hasFailureStockCheck = useSelector<IState, boolean>(state => {
+    return state.cart.failureStockCheck.includes(product.id);
+  })
+
   const handleAddProductToCart = useCallback(() => {
-    dispatch(addProductToCart(product))
+    dispatch(addProductToCartRequest(product))
   }, [dispatch, product]);
 
   return (
@@ -28,6 +33,8 @@ onClick={handleAddProductToCart}
 >
   Comprar
   </button>
+
+  { hasFailureStockCheck &&  <span style={{ color: 'red' }} > Falta de estoque </span>}
   </article>
   );
 }
